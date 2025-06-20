@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom } from 'rxjs';
 import * as FormData from 'form-data';
 import { CreateStudentDto } from '../data/dtos/create-student.dto';
 import { StudentMapper } from '../data/mappers/student.mapper';
@@ -68,18 +68,26 @@ export class AuthService {
       formData.append('folder', 'qr-images');
 
       const uploadResponse = await firstValueFrom(
-        this._httpService.post('/api/cloudinary/upload', formData, {
-          headers: {
-            ...formData.getHeaders(),
-          },
-        }),
+        this._httpService
+          .post('/api/cloudinary/upload', formData, {
+            headers: {
+              ...formData.getHeaders(),
+            },
+          })
+          .pipe(
+            catchError((error) => {
+              this.logger.error(error);
+              throw new InternalServerErrorException(error);
+            }),
+          ),
       );
+      const qrImageUrl = uploadResponse.data.data.url;
+      await this._studentRepository.updateQrPath(student.id, qrImageUrl);
 
-      this.logger.log('Image uploaded successfully');
-      return new RegisterStudentResponseAdapter(
-        uploadResponse.data,
-        encryptedToken,
+      this.logger.log(
+        `Image uploaded successfully ${qrImageUrl} for student ${student.id}`,
       );
+      return new RegisterStudentResponseAdapter(qrImageUrl, encryptedToken);
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException(error);
