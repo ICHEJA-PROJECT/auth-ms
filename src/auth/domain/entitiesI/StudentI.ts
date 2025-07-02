@@ -6,5 +6,5 @@ export interface StudentI {
   educator_id: number;
   qr_path: string;
   person_id: PersonI;
-  disability_id: StudentDisabilityI;
+  // disability_id: StudentDisabilityI; // Eliminado por nueva relación ManyToOne
 }

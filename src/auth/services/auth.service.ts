@@ -65,11 +65,12 @@ export class AuthService {
           student_id: payload.id,
           disability_name: userDto.disability_name,
         };
-        const disabilityRes = await this._disabilityRepository.create(disabilityPayload)
+        const disabilityRes =
+          await this._disabilityRepository.create(disabilityPayload);
         payload = {
           ...payload,
-          disability: disabilityRes.id_disability.name
-        }
+          disability: disabilityRes.id_disability.name,
+        };
       }
       const token = this._jwtService.sign({ ...payload });
       const encryptedToken = this._encryptDataRepository.encrypt(token);
@@ -138,9 +139,13 @@ export class AuthService {
       if (students.length === 0) {
         throw new HttpException('No students found', HttpStatusCode.NoContent);
       }
-      const studentsAdapter = students.map(
-        (student) => new StudentAdapter(student),
-      );
+      const disabilities =
+        await this._disabilityRepository.getAllWithStudents();
+      const studentsAdapter = students.map((student) => {
+        const disability =
+          disabilities.filter((d) => d.id_student.id === student.id)[0] ?? null;
+        return new StudentAdapter(student, disability?.id_disability?.name);
+      });
       return new StudentResponseAdapter(studentsAdapter);
     } catch (error) {
       this.logger.error(error);

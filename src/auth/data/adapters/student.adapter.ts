@@ -24,10 +24,16 @@ export class StudentAdapter {
   })
   person_id: PersonAdapter;
 
-  constructor(student: StudentI) {
+  @ApiProperty({
+    description: 'The disability name'
+  })
+  disability_name: string;
+
+  constructor(student: StudentI, disabilityName : string | null = null) {
     this.id = student.id;
     this.educator_id = student.educator_id;
     this.qr_path = student.qr_path;
+    this.disability_name = disabilityName ? disabilityName : 'Sin discapacidad'
     this.person_id = new PersonAdapter(student.person_id);
   }
 }

@@ -1,6 +1,6 @@
 import { StudentEntity } from 'src/auth/data/entities';
 import { StudentI } from 'src/auth/domain/entitiesI';
-import { Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { DisabilityEntity } from './Disability.entity';
 import {
   DisabilityI,
@@ -8,17 +8,18 @@ import {
 } from 'src/disability/domain/entitiesI';
 
 @Entity('student_disability')
+@Unique(['id_student', 'id_disability'])
 export class StudentDisabilityEntity implements StudentDisabilityI {
   @PrimaryGeneratedColumn('increment')
   id: number;
-  @OneToOne(() => DisabilityEntity, {
+  @ManyToOne(() => DisabilityEntity, {
     cascade: true,
     eager: true,
     nullable: false,
   })
   @JoinColumn({ name: 'id_disability', referencedColumnName: 'id' })
   id_disability: DisabilityI;
-  @OneToOne(() => StudentEntity, {
+  @ManyToOne(() => StudentEntity, {
     cascade: true,
     eager: true,
     nullable: false,

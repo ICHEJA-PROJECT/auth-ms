@@ -5,6 +5,6 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class DisabilityEntity implements DisabilityI {
   @PrimaryGeneratedColumn('increment')
   id: number;
-  @Column({ type: 'varchar', length: 32, nullable: false })
+  @Column({ type: 'varchar', length: 32, nullable: false, unique: true })
   name: string;
 }

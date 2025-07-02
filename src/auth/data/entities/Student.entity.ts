@@ -9,7 +9,6 @@ import {
 import { PersonEntity } from './Person.entity';
 import { StudentDisabilityI } from 'src/disability/domain/entitiesI';
 import {
-  DisabilityEntity,
   StudentDisabilityEntity,
 } from 'src/disability/data/entities';
 
@@ -28,11 +27,12 @@ export class StudentEntity implements StudentI {
   @JoinColumn({ name: 'person_id', referencedColumnName: 'id' })
   person_id: PersonEntity;
 
-  @OneToOne(() => StudentDisabilityEntity, {
-    cascade: true,
-    eager: true,
-    nullable: true,
-  })
-  @JoinColumn({ name: 'disability_id', referencedColumnName: 'id' })
-  disability_id: StudentDisabilityI;
+  // Eliminar la relación con StudentDisabilityEntity para evitar recursión y reflejar la nueva relación ManyToOne
+  // @OneToOne(() => StudentDisabilityEntity, {
+  //   cascade: true,
+  //   eager: true,
+  //   nullable: true,
+  // })
+  // @JoinColumn({ name: 'disability_id', referencedColumnName: 'id' })
+  // disability_id: StudentDisabilityI;
 }

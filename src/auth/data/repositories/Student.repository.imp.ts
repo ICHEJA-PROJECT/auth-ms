@@ -44,7 +44,7 @@ export class StudentRepositoryImp implements StudentRepositoryI {
 
       const students = await this.studentRepository.find({
         where: whereClause,
-        relations: ['person_id', 'disability_id'],
+        relations: ['person_id'],
         skip,
         take: limit,
       });
