@@ -9,4 +9,5 @@ export interface TokenPayloadI {
   ine_number: string;
   born_date: Date;
   sex: SexEnum;
+  disability: string;
 }

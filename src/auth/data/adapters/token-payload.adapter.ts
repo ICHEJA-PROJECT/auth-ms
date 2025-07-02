@@ -28,7 +28,13 @@ export class TokenPayloadAdapter implements TokenPayloadI {
   @ApiProperty({ enum: SexEnum })
   sex: SexEnum;
 
-  static fromStudentToEntity(dto: StudentI): TokenPayloadI {
+  @ApiProperty()
+  disability: string;
+
+  static fromStudentToEntity(
+    dto: StudentI,
+    disability: string = null,
+  ): TokenPayloadI {
     const entity = new TokenPayloadAdapter();
     entity.id = dto.id;
     entity.name = dto.person_id.name;
@@ -38,6 +44,7 @@ export class TokenPayloadAdapter implements TokenPayloadI {
     entity.ine_number = dto.person_id.ine_number;
     entity.born_date = new Date(dto.person_id.born_date);
     entity.sex = dto.person_id.sex;
+    entity.disability = disability;
     return entity;
   }
 }

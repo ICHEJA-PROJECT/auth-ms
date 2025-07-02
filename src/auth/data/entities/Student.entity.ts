@@ -7,6 +7,11 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PersonEntity } from './Person.entity';
+import { StudentDisabilityI } from 'src/disability/domain/entitiesI';
+import {
+  DisabilityEntity,
+  StudentDisabilityEntity,
+} from 'src/disability/data/entities';
 
 @Entity('student')
 export class StudentEntity implements StudentI {
@@ -22,4 +27,12 @@ export class StudentEntity implements StudentI {
   @OneToOne(() => PersonEntity, { cascade: true, eager: true, nullable: false })
   @JoinColumn({ name: 'person_id', referencedColumnName: 'id' })
   person_id: PersonEntity;
+
+  @OneToOne(() => StudentDisabilityEntity, {
+    cascade: true,
+    eager: true,
+    nullable: true,
+  })
+  @JoinColumn({ name: 'disability_id', referencedColumnName: 'id' })
+  disability_id: StudentDisabilityI;
 }

@@ -12,9 +12,11 @@ import {
   QRRepositoryImp,
   StudentRepositoryImp,
 } from './data/repositories';
+import { DisabilityModule } from 'src/disability/disability.module';
 
 @Module({
   imports: [
+    DisabilityModule,
     UploadImageTransport,
     JwtModule.register({
       global: true,

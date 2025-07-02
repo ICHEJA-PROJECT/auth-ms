@@ -1,8 +1,9 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsDateString,
   IsEnum,
   IsNumber,
+  IsOptional,
   IsString,
   Length,
   MaxLength,
@@ -85,4 +86,11 @@ export class CreateStudentDto {
   @ApiProperty({ description: 'The educator id of the student', example: 1 })
   @IsNumber()
   educator_id: number;
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({
+    description: 'The disability name',
+    example: 'Sordomudo',
+  })
+  disability_name?: string;
 }

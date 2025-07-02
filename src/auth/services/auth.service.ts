@@ -33,6 +33,9 @@ import {
   StudentAdapter,
   StudentResponseAdapter,
 } from '../data/adapters/student.adapter';
+import { DisabilityRepositoryImp } from 'src/disability/data/repositories/Disability.repository.imp';
+import { DisabilityRepositoryI } from 'src/disability/domain/repositories/Disability.repository';
+import { CreateStudentDisabilityDto } from 'src/disability/data/dtos/create-student-disability.dto';
 
 @Injectable()
 export class AuthService {
@@ -46,6 +49,8 @@ export class AuthService {
     private readonly _qrRepository: QRRepository,
     @Inject(StudentRepositoryImp)
     private readonly _studentRepository: StudentRepositoryI,
+    @Inject(DisabilityRepositoryImp)
+    private readonly _disabilityRepository: DisabilityRepositoryI,
   ) {}
 
   async registerStudent(
@@ -54,7 +59,18 @@ export class AuthService {
     try {
       const studentEntity = StudentMapper.toEntity(userDto);
       const student = await this._studentRepository.create(studentEntity);
-      const payload = TokenPayloadAdapter.fromStudentToEntity(student);
+      let payload = TokenPayloadAdapter.fromStudentToEntity(student);
+      if (userDto?.disability_name) {
+        const disabilityPayload: CreateStudentDisabilityDto = {
+          student_id: payload.id,
+          disability_name: userDto.disability_name,
+        };
+        const disabilityRes = await this._disabilityRepository.create(disabilityPayload)
+        payload = {
+          ...payload,
+          disability: disabilityRes.id_disability.name
+        }
+      }
       const token = this._jwtService.sign({ ...payload });
       const encryptedToken = this._encryptDataRepository.encrypt(token);
       const qrImageBase64 = await this._qrRepository.generateQR(encryptedToken);
