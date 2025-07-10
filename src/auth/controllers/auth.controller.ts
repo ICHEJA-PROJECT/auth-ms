@@ -2,19 +2,14 @@ import {
   Controller,
   Post,
   Body,
-  UseInterceptors,
-  UploadedFile,
   HttpCode,
   HttpStatus,
   Get,
   Query,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateStudentDto } from '../data/dtos/create-student.dto';
 import { AuthService } from '../services/auth.service';
 import {
-  ApiBody,
-  ApiConsumes,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiQuery,
@@ -25,11 +20,10 @@ import { RegisterStudentResponseAdapter } from '../data/adapters/register-studen
 import { LoginStudentResponseAdapter } from '../data/adapters/login-student.adapter';
 import { ErrorResponseDto } from 'src/common/dtos/error-response.dto';
 import { createSuccessResponseDto } from 'src/common/dtos/success-response.dto';
-import { Student } from '../domain/entities/student.entity';
 import { GetAllStudentsQueryDto } from '../data/dtos/get-all-students.dto';
 import { StudentResponseAdapter } from '../data/adapters/student.adapter';
+import { LoginStudentDto } from '../data/dtos/login-student-dto';
 
-// We create the success response dto dynamically for swagger
 const RegisterStudentSuccess = createSuccessResponseDto(
   RegisterStudentResponseAdapter,
 );
@@ -67,26 +61,13 @@ export class AuthController {
   }
 
   @Post('login-student')
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    description: 'QR image for student login',
-    schema: {
-      type: 'object',
-      properties: {
-        qrImage: {
-          type: 'string',
-          format: 'binary',
-        },
-      },
-    },
-  })
   @ApiOkResponse({
     description: 'Student logged in successfully.',
     type: LoginStudentSuccess,
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad Request. Invalid image or QR code.',
+    description: 'Bad Request. Invalid Token.',
     type: ErrorResponseDto,
   })
   @ApiResponse({
@@ -94,12 +75,10 @@ export class AuthController {
     description: 'Internal Server Error.',
     type: ErrorResponseDto,
   })
-  @UseInterceptors(FileInterceptor('qrImage'))
   loginStudent(
-    @UploadedFile() file: Express.Multer.File,
+    @Body() loginStudentDto: LoginStudentDto,
   ): Promise<LoginStudentResponseAdapter> {
-    const imageBuffer = Buffer.from(file.buffer.toString('base64'), 'base64');
-    return this.authService.loginStudent(imageBuffer);
+    return this.authService.loginStudent(loginStudentDto);
   }
 
   @Get('students')

@@ -36,6 +36,7 @@ import {
 import { DisabilityRepositoryImp } from 'src/disability/data/repositories/Disability.repository.imp';
 import { DisabilityRepositoryI } from 'src/disability/domain/repositories/Disability.repository';
 import { CreateStudentDisabilityDto } from 'src/disability/data/dtos/create-student-disability.dto';
+import { LoginStudentDto } from '../data/dtos/login-student-dto';
 
 @Injectable()
 export class AuthService {
@@ -112,12 +113,12 @@ export class AuthService {
   }
 
   async loginStudent(
-    imageBuffer: Buffer,
+    loginStudentDto: LoginStudentDto,
   ): Promise<LoginStudentResponseAdapter> {
     try {
-      const encryptedToken = await this._qrRepository.readQR(imageBuffer);
-      const decryptedToken =
-        await this._encryptDataRepository.decrypt(encryptedToken);
+      const decryptedToken = await this._encryptDataRepository.decrypt(
+        loginStudentDto.tokenEncode,
+      );
       const {
         iat: _,
         exp,
