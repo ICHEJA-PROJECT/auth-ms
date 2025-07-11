@@ -1,10 +1,4 @@
-import {
-  HttpException,
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
@@ -28,7 +22,6 @@ import {
   TokenPayloadAdapter,
 } from '../data/adapters';
 import { GetAllStudentsQueryDto } from '../data/dtos/get-all-students.dto';
-import { HttpStatusCode } from 'axios';
 import {
   StudentAdapter,
   StudentResponseAdapter,
@@ -37,6 +30,7 @@ import { DisabilityRepositoryImp } from 'src/disability/data/repositories/Disabi
 import { DisabilityRepositoryI } from 'src/disability/domain/repositories/Disability.repository';
 import { CreateStudentDisabilityDto } from 'src/disability/data/dtos/create-student-disability.dto';
 import { LoginStudentDto } from '../data/dtos/login-student-dto';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AuthService {
@@ -95,7 +89,7 @@ export class AuthService {
           .pipe(
             catchError((error) => {
               this.logger.error(error);
-              throw new InternalServerErrorException(error);
+              throw new RpcException(error);
             }),
           ),
       );
@@ -108,7 +102,10 @@ export class AuthService {
       return new RegisterStudentResponseAdapter(qrImageUrl, encryptedToken);
     } catch (error) {
       this.logger.error(error);
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message,
+      });
     }
   }
 
@@ -128,7 +125,10 @@ export class AuthService {
       return new LoginStudentResponseAdapter(decryptedToken, userPayload);
     } catch (error) {
       this.logger.error(error);
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message,
+      });
     }
   }
 
@@ -138,7 +138,10 @@ export class AuthService {
     try {
       const students = await this._studentRepository.findAll(query);
       if (students.length === 0) {
-        throw new HttpException('No students found', HttpStatusCode.NoContent);
+        throw new RpcException({
+          status: HttpStatus.NO_CONTENT,
+          message: 'No students found',
+        });
       }
       const disabilities =
         await this._disabilityRepository.getAllWithStudents();
@@ -150,7 +153,10 @@ export class AuthService {
       return new StudentResponseAdapter(studentsAdapter);
     } catch (error) {
       this.logger.error(error);
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: error.message,
+      });
     }
   }
 }

@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   DisabilityI,
@@ -9,6 +13,7 @@ import { Repository } from 'typeorm';
 import { StudentDisabilityEntity } from '../entities/StudentDisability.entity';
 import { CreateStudentDisabilityDto } from '../dtos/create-student-disability.dto';
 import { DisabilityEntity } from '../entities';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class DisabilityRepositoryImp implements DisabilityRepositoryI {
@@ -43,7 +48,10 @@ export class DisabilityRepositoryImp implements DisabilityRepositoryI {
       const res = await this._studentDisabilityRepository.save(req);
       return res;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 
@@ -54,7 +62,10 @@ export class DisabilityRepositoryImp implements DisabilityRepositoryI {
       });
       return res;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 
@@ -64,7 +75,10 @@ export class DisabilityRepositoryImp implements DisabilityRepositoryI {
         relations: ['id_student', 'id_disability'],
       });
     } catch (err) {
-      throw new InternalServerErrorException(err);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: err.message,
+      });
     }
   }
 }

@@ -1,13 +1,9 @@
 import * as QRCode from 'qrcode';
 import * as sharp from 'sharp';
 import jsQR from 'jsqr';
-import {
-  Injectable,
-  InternalServerErrorException,
-  BadRequestException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger, HttpStatus } from '@nestjs/common';
 import { QRRepository } from 'src/auth/domain/repositories/QR.repository';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class QRRepositoryImp implements QRRepository {
@@ -20,15 +16,19 @@ export class QRRepositoryImp implements QRRepository {
       });
       return qrImage;
     } catch (error) {
-      throw new InternalServerErrorException('Could not generate QR code');
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 
   async readQR(imageBuffer: Buffer): Promise<string> {
     if (!imageBuffer || imageBuffer.length === 0) {
-      throw new BadRequestException(
-        'No image file provided or the file is empty.',
-      );
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'No image file provided or the file is empty',
+      });
     }
 
     try {
@@ -46,17 +46,20 @@ export class QRRepositoryImp implements QRRepository {
       if (code && code.data) {
         return code.data;
       } else {
-        throw new BadRequestException(
-          'Could not decode QR code. No QR code found in the image.',
-        );
+        throw new RpcException({
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: 'Could not decode QR code. No QR code found in the image.',
+        });
       }
     } catch (error) {
-      if (error instanceof BadRequestException) throw error;
       this.logger.error(
         'Failed to process image with sharp or read QR code with jsQR',
         error.stack,
       );
-      throw new BadRequestException('Invalid or corrupted image file format.');
+      throw new RpcException({
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Invalid or corrupted image file format ',
+      });
     }
   }
 }

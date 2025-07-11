@@ -1,4 +1,7 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { StudentRepositoryI } from 'src/auth/domain/repositories/Student.repository';
 import { StudentEntity } from '../entities/Student.entity';
@@ -6,6 +9,7 @@ import { Repository } from 'typeorm';
 import { StudentI } from 'src/auth/domain/entitiesI';
 import { Student } from 'src/auth/domain/entities/student.entity';
 import { GetAllStudentsQueryDto } from '../dtos/get-all-students.dto';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class StudentRepositoryImp implements StudentRepositoryI {
@@ -19,7 +23,10 @@ export class StudentRepositoryImp implements StudentRepositoryI {
       const newStudent = this.studentRepository.create(student);
       return this.studentRepository.save(newStudent);
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 
@@ -27,7 +34,10 @@ export class StudentRepositoryImp implements StudentRepositoryI {
     try {
       await this.studentRepository.update(id, { qr_path: qrPath });
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 
@@ -50,7 +60,10 @@ export class StudentRepositoryImp implements StudentRepositoryI {
       });
       return students;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 
@@ -65,7 +78,10 @@ export class StudentRepositoryImp implements StudentRepositoryI {
       });
       return student;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 }

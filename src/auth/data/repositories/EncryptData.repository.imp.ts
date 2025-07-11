@@ -1,8 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { EncryptDataRepository } from 'src/auth/domain/repositories/EncryptData.repository';
 import { envsValues } from 'src/core/config/getEnvs';
 
 import * as crypto from 'crypto';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class EncryptDataRepositoryImp implements EncryptDataRepository {
@@ -21,7 +26,10 @@ export class EncryptDataRepositoryImp implements EncryptDataRepository {
       encrypted = Buffer.concat([encrypted, cipher.final()]);
       return iv.toString('hex') + ':' + encrypted.toString('hex');
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 
@@ -39,7 +47,10 @@ export class EncryptDataRepositoryImp implements EncryptDataRepository {
       decrypted = Buffer.concat([decrypted, decipher.final()]);
       return decrypted.toString();
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new RpcException({
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message,
+      });
     }
   }
 }
