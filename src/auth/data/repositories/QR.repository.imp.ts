@@ -12,7 +12,7 @@ export class QRRepositoryImp implements QRRepository {
   async generateQR(text: string): Promise<string> {
     try {
       const qrImage = await QRCode.toDataURL(text, {
-        errorCorrectionLevel: 'H',
+        errorCorrectionLevel: 'L',
       });
       return qrImage;
     } catch (error) {
