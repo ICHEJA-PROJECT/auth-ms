@@ -20,12 +20,9 @@ services:
       context: .
       dockerfile: dockerfile.prod
     restart: always
-    ports:
-      - '${PORT:-3000}:3000'
     depends_on:
       - auth-db
     environment:
-      - PORT=${PORT:-3000}
       - DB_HOST=auth-db
       - DB_PORT=5432
       - DB_USERNAME=${DB_USERNAME:-postgres}

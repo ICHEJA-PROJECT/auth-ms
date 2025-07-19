@@ -1,5 +1,4 @@
 export interface EnvsI {
-  PORT: number;
   JWT_SECRET: string;
   ENCRYPTION_KEY: string;
   UPLOAD_IMAGE_SERVICE_URL: string;

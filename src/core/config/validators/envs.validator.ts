@@ -2,7 +2,6 @@ import * as Joi from 'joi';
 import { EnvsI } from '../domain/interfaces/EnvsI';
 
 export const envsValidator = Joi.object<EnvsI>({
-  PORT: Joi.number().required(),
   JWT_SECRET: Joi.string()
     .required()
     .description('The secret key for the JWT token'),

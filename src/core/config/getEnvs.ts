@@ -13,7 +13,6 @@ const getEnvs = (): EnvsI => {
   }
 
   return {
-    PORT: value.PORT,
     JWT_SECRET: value.JWT_SECRET,
     ENCRYPTION_KEY: value.ENCRYPTION_KEY,
     UPLOAD_IMAGE_SERVICE_URL: value.UPLOAD_IMAGE_SERVICE_URL,

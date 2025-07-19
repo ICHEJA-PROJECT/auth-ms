@@ -39,9 +39,6 @@ Abre el archivo `.env` y rellena las variables necesarias:
 ```env
 # .env
 
-# App Port
-PORT=3000
-
 # DB Connection (usadas por la app y por Docker Compose)
 DB_USERNAME=postgres
 DB_PASSWORD=1234567
